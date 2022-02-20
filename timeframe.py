@@ -8,8 +8,6 @@ from telethon.tl.functions.messages import GetDialogsRequest
 from telethon.tl.types import InputPeerEmpty
 from telethon.utils import get_display_name
 from telethon.sync import TelegramClient
-from elasticsearch import Elasticsearch
-from elasticsearch import helpers
 from datetime import date, datetime, timedelta
 import datetime, csv, os
 import details as ds
