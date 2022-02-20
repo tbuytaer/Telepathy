@@ -50,41 +50,42 @@ async def main():
                 id = message.forward.original_fwd.from_id
                 if id is not None:
                     ent = await client.get_entity(id)
-                    nameID = message.from_id
-                    year = format(message.date.year, '02d')
-                    month = format(message.date.month, '02d')
-                    day = format(message.date.day, '02d')
-                    hour = format(message.date.hour, '02d')
-                    minute = format(message.date.minute, '02d')
+                    if(hasattr(ent, 'title')):
+                        nameID = message.from_id
+                        year = format(message.date.year, '02d')
+                        month = format(message.date.month, '02d')
+                        day = format(message.date.day, '02d')
+                        hour = format(message.date.hour, '02d')
+                        minute = format(message.date.minute, '02d')
 
-                    date = str(year) + "/" + str(month) + "/" + str(day)
-                    time = str(hour) + ":" + str(minute)
-                    timestamp = date + ", " + time
-                    if user_selection_log == 'y':
-                        print(ent.title,">>>",channel_name)
-                    else:
-                        pass
-                    df = pd.DataFrame(l, columns = ['To','From','timestamp'])
+                        date = str(year) + "/" + str(month) + "/" + str(day)
+                        time = str(hour) + ":" + str(minute)
+                        timestamp = date + ", " + time
+                        if user_selection_log == 'y':
+                            print(ent.title,">>>",channel_name)
+                        else:
+                            pass
+                        df = pd.DataFrame(l, columns = ['To', 'FromID', 'FromName', 'FromUsername', 'timestamp'])
 
-                    name_clean = channel_name
-                    alphanumeric = ""
+                        name_clean = channel_name
+                        alphanumeric = ""
 
-                    for character in name_clean:
-                        if character.isalnum():
-                            alphanumeric += character
+                        for character in name_clean:
+                            if character.isalnum():
+                                alphanumeric += character
 
-                    directory = './edgelists/'
-                    try:
-                        os.makedirs(directory)
-                    except FileExistsError:
-                        pass
+                        directory = './edgelists/'
+                        try:
+                            os.makedirs(directory)
+                        except FileExistsError:
+                            pass
 
-                    file = './edgelists/'+ alphanumeric + '_edgelist.csv'
+                        file = './edgelists/'+ alphanumeric + '_edgelist.csv'
 
-                    with open(file,'w+') as f:
-                        df.to_csv(f)
+                        with open(file,'w+') as f:
+                            df.to_csv(f)
 
-                    l.append([channel_name, ent.title, timestamp])
+                        l.append([channel_name, ent.id, ent.title, ent.username, timestamp])
 
             except:
                 if user_selection_log == 'y':
@@ -108,7 +109,7 @@ if next1 == 'y':
             if character.isalnum():
                 alphanumeric += character
         df = pd.read_csv('./edgelists/'+ alphanumeric + '_edgelist.csv')
-        df = df.From.unique()
+        df = df.FromID.unique()
         l = []
         for i in df:
             async for message in client.iter_messages(i):
@@ -132,7 +133,7 @@ if next1 == 'y':
                             else:
                                 pass
 
-                            df = pd.DataFrame(l, columns = ['To','From','Timestamp'])
+                            df = pd.DataFrame(l, columns = ['To', 'FromID', 'From', 'FromUsername', 'Timestamp'])
 
                             name_clean = channel_name
                             alphanumeric = ""
@@ -152,9 +153,9 @@ if next1 == 'y':
                             with open(file1,'w+') as f:
                                 df.to_csv(f)
 
-                            l.append([i, ent.title, timestamp])
+                            l.append([i, ent.id, ent.title, ent.username, timestamp])
                     except:
-                        if user_selection_media == 'y':
+                        if user_selection_log == 'y':
                             print("An exception occurred: Could be private, now deleted, or a group.")
                         else:
                             pass
