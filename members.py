@@ -61,7 +61,7 @@ target_group=groups[int(g_index)]
 
 print('Fetching members for'+target_group.title+'...')
 all_participants = []
-all_participants = client.get_participants(target_group, aggressive=True)
+all_participants = client.get_participants(target_group)
 
 print('Creating file...')
 directory = './memberlists'
