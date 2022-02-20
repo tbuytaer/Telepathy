@@ -103,16 +103,19 @@ with open(file_name,"w",encoding='UTF-8') as f:
         writer.writerow([username,user.id,name,target_group.title,target_group.id])
 print('Members scraped successfully.')
 
-again = input('Do you want to scrape more groups? (y/n)')
-if again == 'y':
-    print('Restarting...')
-    exec(open("members.py").read())
+if(batch):
+    exit()
 else:
-    pass
+    again = input('Do you want to scrape more groups? (y/n)')
+    if again == 'y':
+        print('Restarting...')
+        exec(open("members.py").read())
+    else:
+        pass
 
-launcher = input('Do you want to return to the launcher? (y/n)')
-if launcher == 'y':
-    print('Restarting...')
-    exec(open("telepathy.py").read())
-else:
-    print('Thank you for using Telepathy.')
+    launcher = input('Do you want to return to the launcher? (y/n)')
+    if launcher == 'y':
+        print('Restarting...')
+        exec(open("telepathy.py").read())
+    else:
+        print('Thank you for using Telepathy.')

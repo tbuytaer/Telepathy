@@ -51,8 +51,12 @@ for chat in chats:
     groups.append(chat)
 
 print('Welcome to the Telepathy archiving tool. This tool will archive Telegram chats based on a list.')
-user_selection_log = input('Do you want to print messages to terminal while Telepathy runs? (y/n)')
-user_selection_media = input('Do you want to archive media content? (y/n)')
+if batch:
+    user_selection_log = "y"
+    user_selection_media = "n"
+else:
+    user_selection_log = input('Do you want to print messages to terminal while Telepathy runs? (y/n)')
+    user_selection_media = input('Do you want to archive media content? (y/n)')
 
 print('Archiving chats...')
 
@@ -134,7 +138,7 @@ async def main():
                     l.append(['None','None','None','None','None','None','None','None','None','None','None','None','None'])
                     continue
 
-            jsons = './json_files'
+            jsons = directory + 'json_files'
             try:
                 os.makedirs(jsons)
             except FileExistsError:
@@ -154,14 +158,20 @@ with client:
 
 print('List archived successfully')
 
-again = input('Do you want to archive more groups? (y/n)')
+if batch:
+    again = "n"
+else:
+    again = input('Do you want to archive more groups? (y/n)')
 if again == 'y':
     print('Restarting...')
     exec(open("archiver.py").read())
 else:
     pass
 
-launcher = input('Do you want to return to the launcher? (y/n)')
+if batch:
+    launcher = "n"
+else:
+    launcher = input('Do you want to return to the launcher? (y/n)')
 if launcher == 'y':
     print('Restarting...')
     exec(open("telepathy.py").read())
