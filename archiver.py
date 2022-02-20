@@ -52,7 +52,7 @@ for chat in chats:
 
 print('Welcome to the Telepathy archiving tool. This tool will archive Telegram chats based on a list.')
 if batch:
-    user_selection_log = "y"
+    user_selection_log = "n"
     user_selection_media = "n"
 else:
     user_selection_log = input('Do you want to print messages to terminal while Telepathy runs? (y/n)')
@@ -61,17 +61,25 @@ else:
 print('Archiving chats...')
 
 async def main():
-    df = pd.read_csv('to_archive.csv', sep=';')
-    df = df.To.unique()
-
-    for i in df:
-        print("Working on ",i," This may take a while...")
+    toArchiveDF = pd.read_csv('to_archive.csv', sep=';')
+    channelList = toArchiveDF.To.unique()
+    for channel in channelList:
+        print("Working on ",channel," This may take a while...")
+        if batch:
+            if(len(toArchiveDF['Media']) == 1 ):
+                user_selection_media = toArchiveDF['Media'][0]
+            elif(len(toArchiveDF['Media']) > 0 ):
+                print(f"WARNING: '{channel}' appears more than once in to_archive.csv! Using first value.")
+                user_selection_media = toArchiveDF['Media'][0]
+            else:
+                print("No valid 'media' value for {channel}. Using default (no)")
+                user_selection_media = "n"
         l = []
         try:
-            async for message in client.iter_messages(i):
+            async for message in client.iter_messages(channel):
                 if message is not None:
                     try:
-                        i_clean = i
+                        i_clean = channel
                         alphanumeric = ""
 
                         for character in i_clean:
@@ -93,12 +101,12 @@ async def main():
                         except FileExistsError:
                             pass
 
-                        df = pd.DataFrame(l, columns = ['Chat name','message ID','Name','ID','Message text','Timestamp','Reply to','Views','Forward Peer ID','Forwarded From','Post Author','Forward post ID'])
+                        channelList = pd.DataFrame(l, columns = ['Chat name','message ID','Name','ID','Message text','Timestamp','Reply to','Views','Forward Peer ID','Forwarded From','Post Author','Forward post ID'])
 
                         file = directory + '/'+ alphanumeric + '_' + filetime_clean +'_archive.csv'
 
                         with open(file, 'w+') as f:
-                            df.to_csv(f, sep=';')
+                            channelList.to_csv(f, sep=';')
 
                         name = get_display_name(message.sender)
                         nameID = message.from_id
@@ -122,8 +130,8 @@ async def main():
                             print(name,':','"' + message.text + '"',timestamp)
                         else:
                             pass
-
-                        l.append([i,message.id,name,nameID,'"' + message.text + '"',timestamp,reply,views,forward_ID,forward_name,post_author,forward_post_ID])
+                        
+                        l.append([channel,message.id,name,nameID,'"' + message.text + '"',timestamp,reply,views,forward_ID,forward_name,post_author,forward_post_ID])
                         if user_selection_media == 'y':
                             if message.media:
                                 path = await message.download_media(file=media_directory)
@@ -144,11 +152,11 @@ async def main():
             except FileExistsError:
                 pass
 
-            df.to_json(jsons+'/'+alphanumeric+'_archive.json',orient='split',compression='infer',index='true')
+            channelList.to_json(jsons+'/'+alphanumeric+'_archive.json',orient='split',compression='infer',index='true')
 
-            print("Scrape completed for",i,", file saved")
+            print("Scrape completed for",channel,", file saved")
 
-            df = pd.DataFrame(None)
+            channelList = pd.DataFrame(None)
 
         except Exception as e:
             print("An exception occurred.", e)
