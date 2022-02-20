@@ -64,7 +64,10 @@ all_participants = []
 all_participants = client.get_participants(target_group)
 
 print('Creating file...')
-directory = './output/memberlists/'
+if len(subfolder) != 0:
+    directory = './output/' + subfolder + '/' + 'memberlists/'
+else:
+    directory = './output/memberlists/'
 try:
     os.makedirs(directory)
 except FileExistsError:

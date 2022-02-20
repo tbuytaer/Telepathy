@@ -74,7 +74,10 @@ async def main():
                             if character.isalnum():
                                 alphanumeric += character
 
-                        directory = './output/edgelists/'
+                        if len(subfolder) != 0:
+                            directory = './output/' + subfolder + '/' + 'edgelists/'
+                        else:
+                            directory = './output/edgelists/'
                         try:
                             os.makedirs(directory)
                         except FileExistsError:
@@ -142,7 +145,10 @@ if next1 == 'y':
                                 if character.isalnum():
                                     alphanumeric += character
 
-                            directory = './output/edgelists/'
+                            if len(subfolder) != 0:
+                                directory = './output/' + subfolder + '/' + 'edgelists/'
+                            else:
+                                directory = './output/edgelists/'
                             try:
                                 os.makedirs(directory)
                             except FileExistsError:

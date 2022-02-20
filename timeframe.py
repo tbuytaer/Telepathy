@@ -82,8 +82,10 @@ async def main():
                         for character in i_clean:
                             if character.isalnum():
                                 alphanumeric += character
-                        directory = './output/' + alphanumeric
-
+                        if len(subfolder) != 0:
+                            directory = './output/' + subfolder + '/' + alphanumeric
+                        else:
+                            directory = './output/' + alphanumeric
                         try:
                             os.makedirs(directory)
                         except FileExistsError:
