@@ -74,13 +74,13 @@ async def main():
                             if character.isalnum():
                                 alphanumeric += character
 
-                        directory = './edgelists/'
+                        directory = './output/edgelists/'
                         try:
                             os.makedirs(directory)
                         except FileExistsError:
                             pass
 
-                        file = './edgelists/'+ alphanumeric + '_edgelist.csv'
+                        file = directory + alphanumeric + '_edgelist.csv'
 
                         with open(file,'w+') as f:
                             df.to_csv(f)
@@ -142,13 +142,13 @@ if next1 == 'y':
                                 if character.isalnum():
                                     alphanumeric += character
 
-                            directory = './edgelists/'
+                            directory = './output/edgelists/'
                             try:
                                 os.makedirs(directory)
                             except FileExistsError:
                                 pass
 
-                            file1 = './edgelists/'+ alphanumeric + '_net.csv'
+                            file1 = directory + alphanumeric + '_net.csv'
 
                             with open(file1,'w+') as f:
                                 df.to_csv(f)

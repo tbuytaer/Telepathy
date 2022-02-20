@@ -73,7 +73,7 @@ async def main():
                         for character in i_clean:
                             if character.isalnum():
                                 alphanumeric += character
-                        directory = './' + alphanumeric
+                        directory = './output/' + alphanumeric
 
                         try:
                             os.makedirs(directory)

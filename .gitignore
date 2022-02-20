@@ -3,3 +3,5 @@ details.py
 __pycache__/
 
 *.session
+
+output/*

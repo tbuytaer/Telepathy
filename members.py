@@ -64,7 +64,7 @@ all_participants = []
 all_participants = client.get_participants(target_group)
 
 print('Creating file...')
-directory = './memberlists'
+directory = './output/memberlists'
 try:
     os.makedirs(directory)
 except FileExistsError:
@@ -77,7 +77,7 @@ for character in name_clean:
     if character.isalnum():
         alphanumeric += character
 
-file_name = "./memberlists/"+alphanumeric+"_members.csv"
+file_name = directory + alphanumeric + "_members.csv"
 
 print('Saving in file...')
 with open(file_name,"w",encoding='UTF-8') as f:
