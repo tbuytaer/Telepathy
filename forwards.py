@@ -28,22 +28,11 @@ if not client.is_user_authorized():
     client.sign_in(phone, input('Enter the code: '))
 
 print('Welcome to channel forward scraper.\nThis tool will scrape a Telegram channel for all forwarded messages and their original sources.')
-user_selection_log = input('Do you want to print forwards to terminal while Telepathy runs? (y/n)')
 
-while True:
-    try:
-        channel_name = input("Please enter a Telegram channel name:\n")
-        print(f'You entered "{channel_name}"')
-        answer = input('Is this correct? (y/n)')
-        if answer == 'y':
-            print('Scraping forwards from', channel_name, 'This may take a while...')
-            break;
-    except:
-            continue
 
-async def main():
+async def main(channelUsername):
     l = []
-    async for message in client.iter_messages(channel_name):
+    async for message in client.iter_messages(channelUsername):
 
         if message.forward is not None:
             try:
@@ -62,12 +51,12 @@ async def main():
                         time = str(hour) + ":" + str(minute)
                         timestamp = date + ", " + time
                         if user_selection_log == 'y':
-                            print(ent.title,">>>",channel_name)
+                            print(ent.title,">>>",channelUsername)
                         else:
                             pass
                         df = pd.DataFrame(l, columns = ['To', 'FromID', 'FromName', 'FromUsername', 'timestamp'])
 
-                        name_clean = channel_name
+                        name_clean = channelUsername
                         alphanumeric = ""
 
                         for character in name_clean:
@@ -88,7 +77,7 @@ async def main():
                         with open(file,'w+') as f:
                             df.to_csv(f)
 
-                        l.append([channel_name, ent.id, ent.title, ent.username, timestamp])
+                        l.append([channelUsername, ent.id, ent.title, ent.username, timestamp])
 
             except:
                 if user_selection_log == 'y':
@@ -96,16 +85,45 @@ async def main():
                 else:
                     pass
 
-with client:
-    client.loop.run_until_complete(main())
+
+
+
+
+if batch:
+    user_selection_log = "n"
+    toForwardDF = pd.read_csv('forwardchannels.csv')
+    channelList = toForwardDF.Username.unique()
+
+    for channelUsername in channelList:
+        print('Scraping forwards from', channelUsername, 'This may take a while...')
+        with client:
+            client.loop.run_until_complete(main(channelUsername))
+else:
+    user_selection_log = input('Do you want to print forwards to terminal while Telepathy runs? (y/n)')
+    while True:
+        try:
+            channelUsername = input("Please enter a Telegram channel name:\n")
+            print(f'You entered "{channelUsername}"')
+            answer = input('Is this correct? (y/n)')
+            if answer == 'y':
+                print('Scraping forwards from', channelUsername, 'This may take a while...')
+                break;
+        except:
+                continue
+    with client:
+            client.loop.run_until_complete(main(channelUsername))
+
 
 print('Forwards scraped successfully.')
 
-next1 = input('Do you also want to scrape forwards from the discovered channels? (y/n)')
+if batch:
+    next1 = "n"
+else:
+    next1 = input('Do you also want to scrape forwards from the discovered channels? (y/n)')
 if next1 == 'y':
-    print('Scraping forwards from channels discovered in', channel_name, '...')
+    print('Scraping forwards from channels discovered in', channelUsername, '...')
     async def new_main():
-        name_clean = channel_name
+        name_clean = channelUsername
         alphanumeric = ""
 
         for character in name_clean:
@@ -138,7 +156,7 @@ if next1 == 'y':
 
                             df = pd.DataFrame(l, columns = ['To', 'FromID', 'From', 'FromUsername', 'Timestamp'])
 
-                            name_clean = channel_name
+                            name_clean = channelUsername
                             alphanumeric = ""
 
                             for character in name_clean:
@@ -175,14 +193,20 @@ if next1 == 'y':
 else:
     pass
 
-again = input('Do you want to scrape more chats? (y/n)')
+if batch:
+    again = "n"
+else:
+    again = input('Do you want to scrape more chats? (y/n)')
 if again == 'y':
     print('Restarting...')
     exec(open("forwards.py").read())
 else:
     pass
 
-launcher = input('Do you want to return to the launcher? (y/n)')
+if batch:
+    launcher = "n"
+else:
+    launcher = input('Do you want to return to the launcher? (y/n)')
 if launcher == 'y':
     print('Restarting...')
     exec(open("telepathy.py").read())
