@@ -90,35 +90,6 @@ async def main():
             async for message in client.iter_messages(channel):
                 if message is not None:
                     try:
-                        i_clean = channel
-                        alphanumeric = ""
-
-                        for character in i_clean:
-                            if character.isalnum():
-                                alphanumeric += character
-                        if len(subfolder) != 0:
-                            directory = './output/' + subfolder + '/' + alphanumeric
-                        else:
-                            directory = './output/' + alphanumeric
-
-                        try:
-                            os.makedirs(directory)
-                        except FileExistsError:
-                            pass
-                        media_directory = directory + '/media'
-
-                        try:
-                            os.makedirs(media_directory)
-                        except FileExistsError:
-                            pass
-
-                        channelList = pd.DataFrame(l, columns = ['Chat name','message ID','Name','ID','Message text','Timestamp','Reply to','Views','Forward Peer ID','Forwarded From','Post Author','Forward post ID'])
-
-                        file = directory + '/'+ alphanumeric + '_' + filetime_clean +'_archive.csv'
-
-                        with open(file, 'w+') as f:
-                            channelList.to_csv(f, sep=';')
-
                         name = get_display_name(message.sender)
                         nameID = message.from_id
                         year = str(format(message.date.year, '02d'))
@@ -161,18 +132,49 @@ async def main():
                 else:
                     l.append(['None','None','None','None','None','None','None','None','None','None','None','None','None'])
                     continue
+        
+            channel_clean = channel
+            alphanumeric = ""
 
-            jsons = directory + 'json_files'
+            for character in channel_clean:
+                if character.isalnum():
+                    alphanumeric += character
+            if len(subfolder) != 0:
+                directory = './output/' + subfolder + '/' + alphanumeric
+            else:
+                directory = './output/' + alphanumeric
+
+            try:
+                os.makedirs(directory)
+            except FileExistsError:
+                pass
+            media_directory = directory + '/media'
+
+            try:
+                os.makedirs(media_directory)
+            except FileExistsError:
+                pass
+
+            channelArchiveDF = pd.DataFrame(l, columns = ['Chat name','message ID','Name','ID','Message text','Timestamp','Reply to','Views','Forward Peer ID','Forwarded From','Post Author','Forward post ID'])
+
+            file = directory + '/'+ alphanumeric + '_' + filetime_clean +'_archive.csv'
+
+            with open(file, 'w+') as f:
+                channelArchiveDF.to_csv(f, sep=';')
+
+
+
+            jsons = directory + '/' + 'json_files'
             try:
                 os.makedirs(jsons)
             except FileExistsError:
                 pass
 
-            channelList.to_json(jsons+'/'+alphanumeric+'_archive.json',orient='split',compression='infer',index='true')
+            channelArchiveDF.to_json(jsons+'/'+alphanumeric+'_archive.json',orient='split',compression='infer',index='true')
 
             print("Scrape completed for",channel,", file saved")
 
-            channelList = pd.DataFrame(None)
+            channelArchiveDF = pd.DataFrame(None)
 
         except Exception as e:
             print("An exception occurred.", e)
