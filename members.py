@@ -27,11 +27,56 @@ if not client.is_user_authorized():
     client.send_code_request(phone)
     client.sign_in(phone, input('Enter the code: '))
 
+def getMembers(target_group):
+    print("Test")
+    print('Fetching members for'+target_group.title+'...')
+    all_participants = []
+    all_participants = client.get_participants(target_group)
+
+    print('Creating file...')
+    if len(subfolder) != 0:
+        directory = './output/' + subfolder + '/' + 'memberlists/'
+    else:
+        directory = './output/memberlists/'
+    try:
+        os.makedirs(directory)
+    except FileExistsError:
+        pass
+
+    name_clean = target_group.title
+    alphanumeric = ""
+
+    for character in name_clean:
+        if character.isalnum():
+            alphanumeric += character
+
+    file_name = directory + alphanumeric + "_members.csv"
+
+    print('Saving in file...')
+    with open(file_name,"w",encoding='UTF-8') as f:
+        writer = csv.writer(f,delimiter=",",lineterminator="\n")
+        writer.writerow(['username','user id','name','first name','last name','group', 'group id','group username','group member count'])
+        for user in all_participants:
+            if user.username:
+                username= user.username
+            else:
+                username= ""
+            if user.first_name:
+                first_name= user.first_name
+            else:
+                first_name= ""
+            if user.last_name:
+                last_name= user.last_name
+            else:
+                last_name= ""
+            name= (first_name + ' ' + last_name).strip()
+            writer.writerow([username,user.id,name,first_name,last_name,target_group.title,target_group.id,target_group.username,target_group.participants_count])
+    print('Members scraped successfully.')
+
 chats = []
 last_date = None
 chunk_size = 200
 groups=[]
-
 result = client(GetDialogsRequest(
              offset_date=last_date,
              offset_id=0,
@@ -49,59 +94,20 @@ for chat in chats:
         continue
 
 print("Welcome to group member scraper.\nThis tool will scrape a Telegram group's members")
-
-print('Choose a group to scrape members from:')
-i=0
-for g in groups:
-    print(str(i) + '- ' + g.title)
-    i+=1
-
-g_index = input("Enter a Number: ")
-target_group=groups[int(g_index)]
-
-print('Fetching members for'+target_group.title+'...')
-all_participants = []
-all_participants = client.get_participants(target_group)
-
-print('Creating file...')
-if len(subfolder) != 0:
-    directory = './output/' + subfolder + '/' + 'memberlists/'
+if batch:
+    print("Batch mode TODO")
+    for target_group in groups:
+        getMembers(target_group)
 else:
-    directory = './output/memberlists/'
-try:
-    os.makedirs(directory)
-except FileExistsError:
-    pass
+    print('Choose a group to scrape members from:')
+    i=0
+    for g in groups:
+        print(str(i) + '- ' + g.title)
+        i+=1
 
-name_clean = target_group.title
-alphanumeric = ""
-
-for character in name_clean:
-    if character.isalnum():
-        alphanumeric += character
-
-file_name = directory + alphanumeric + "_members.csv"
-
-print('Saving in file...')
-with open(file_name,"w",encoding='UTF-8') as f:
-    writer = csv.writer(f,delimiter=",",lineterminator="\n")
-    writer.writerow(['username','user id','name','group', 'group id'])
-    for user in all_participants:
-        if user.username:
-            username= user.username
-        else:
-            username= ""
-        if user.first_name:
-            first_name= user.first_name
-        else:
-            first_name= ""
-        if user.last_name:
-            last_name= user.last_name
-        else:
-            last_name= ""
-        name= (first_name + ' ' + last_name).strip()
-        writer.writerow([username,user.id,name,target_group.title,target_group.id])
-print('Members scraped successfully.')
+    g_index = input("Enter a Number: ")
+    target_group=groups[int(g_index)]
+    getMembers(target_group)
 
 if(batch):
     exit()
