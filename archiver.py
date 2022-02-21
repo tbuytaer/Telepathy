@@ -66,14 +66,25 @@ async def main():
     for channel in channelList:
         print("Working on ",channel," This may take a while...")
         if batch:
-            if(len(toArchiveDF['Media']) == 1 ):
-                user_selection_media = toArchiveDF['Media'][0]
-            elif(len(toArchiveDF['Media']) > 0 ):
+            channelDF = toArchiveDF[toArchiveDF['To'] == channel]
+            if(len(channelDF.index) == 1 ):
+                user_selection_media = channelDF['Media'].values[0]
+            elif(len(channelDF.index) > 0 ):
                 print(f"WARNING: '{channel}' appears more than once in to_archive.csv! Using first value.")
-                user_selection_media = toArchiveDF['Media'][0]
+                user_selection_media = channelDF['Media'].values[0]
             else:
                 print("No valid 'media' value for {channel}. Using default (no)")
                 user_selection_media = "n"
+            
+        if (not pd.isna(channelDF['Startdate'][0]) and len(channelDF['Startdate'].values[0]) == 10):
+            d_start = datetime.datetime.strptime(channelDF['Startdate'].values[0], '%Y-%m-%d')
+        else:
+            d_start = datetime.datetime.strptime('2000-01-01', '%Y-%m-%d')
+        if (not pd.isna(channelDF['Enddate'][0]) and len(channelDF['Enddate'].values[0]) == 10):
+            d_end = datetime.datetime.strptime(channelDF['Enddate'].values[0], '%Y-%m-%d')
+        else:
+            d_end = datetime.datetime.strptime('2037-01-01', '%Y-%m-%d')
+
         l = []
         try:
             async for message in client.iter_messages(channel):
@@ -131,14 +142,19 @@ async def main():
                         else:
                             pass
                         
-                        l.append([channel,message.id,name,nameID,'"' + message.text + '"',timestamp,reply,views,forward_ID,forward_name,post_author,forward_post_ID])
-                        if user_selection_media == 'y':
-                            if message.media:
-                                path = await message.download_media(file=media_directory)
-                                if user_selection_log == 'y':
-                                    print('File saved to', path)
-                            else:
-                                pass
+                        datestamp = year + "," + month + "," + day
+                        datestamp_clean = datetime.datetime.strptime(datestamp, '%Y,%m,%d')
+                        timestamp = year + "-" + month + "-" + day + ", " + hour + ":" + minute
+
+                        if d_start <= datestamp_clean and d_end >= datestamp_clean:
+                            l.append([channel,message.id,name,nameID,'"' + message.text + '"',timestamp,reply,views,forward_ID,forward_name,post_author,forward_post_ID])
+                            if user_selection_media == 'y':
+                                if message.media:
+                                    path = await message.download_media(file=media_directory)
+                                    if user_selection_log == 'y':
+                                        print('File saved to', path)
+                                else:
+                                    pass
 
                     except:
                         continue
