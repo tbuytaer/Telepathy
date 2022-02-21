@@ -184,7 +184,6 @@ if next1 == 'y':
                             pass
 
             print("Scrape complete for:", i,)
-        df.to_json(alphanumeric + '_archive.json', orient = 'split', compression = 'infer', index = 'true')
 
     with client:
         client.loop.run_until_complete(new_main())
