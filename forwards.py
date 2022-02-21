@@ -54,28 +54,6 @@ async def main(channelUsername):
                             print(ent.title,">>>",channelUsername)
                         else:
                             pass
-                        df = pd.DataFrame(l, columns = ['To', 'FromID', 'FromName', 'FromUsername', 'timestamp'])
-
-                        name_clean = channelUsername
-                        alphanumeric = ""
-
-                        for character in name_clean:
-                            if character.isalnum():
-                                alphanumeric += character
-
-                        if len(subfolder) != 0:
-                            directory = './output/' + subfolder + '/' + 'edgelists/'
-                        else:
-                            directory = './output/edgelists/'
-                        try:
-                            os.makedirs(directory)
-                        except FileExistsError:
-                            pass
-
-                        file = directory + alphanumeric + '_edgelist.csv'
-
-                        with open(file,'w+') as f:
-                            df.to_csv(f)
 
                         l.append([channelUsername, ent.id, ent.title, ent.username, timestamp])
 
@@ -85,7 +63,28 @@ async def main(channelUsername):
                 else:
                     pass
 
+    name_clean = channelUsername
+    alphanumeric = ""
 
+    for character in name_clean:
+        if character.isalnum():
+            alphanumeric += character
+
+    if len(subfolder) != 0:
+        directory = './output/' + subfolder + '/' + 'edgelists/'
+    else:
+        directory = './output/edgelists/'
+    try:
+        os.makedirs(directory)
+    except FileExistsError:
+        pass
+
+    channelForwardDF = pd.DataFrame(l, columns = ['To', 'FromID', 'FromName', 'FromUsername', 'timestamp'])
+
+    file = directory + alphanumeric + '_edgelist.csv'
+
+    with open(file,'w+') as f:
+        channelForwardDF.to_csv(f)
 
 
 
@@ -129,8 +128,8 @@ if next1 == 'y':
         for character in name_clean:
             if character.isalnum():
                 alphanumeric += character
-        df = pd.read_csv('./edgelists/'+ alphanumeric + '_edgelist.csv')
-        df = df.FromID.unique()
+        df = pd.read_csv('./output/' + subfolder + '/' + 'edgelists/'+ alphanumeric + '_edgelist.csv')
+        df = df.FromUsername.unique()
         l = []
         for i in df:
             async for message in client.iter_messages(i):
