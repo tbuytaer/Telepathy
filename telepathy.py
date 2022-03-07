@@ -18,13 +18,15 @@ __status__ = "Development"
 """ Get arguments from command line """
 parser = argparse.ArgumentParser(description='Select mode')
 parser.add_argument('--mode', default = "menu", choices = ['archive', 'archive-period', 'members', 'forwards','userlookup','menu'], help = "The action to perform.")
-parser.add_argument('--output', dest = 'subfolder', help = "Name of subfolder to store output in.", default = "")
+parser.add_argument('--input', dest = 'inputFile', help = "Name of file to get input from.", default = "")
+parser.add_argument('--output', dest = 'outputSubfolder', help = "Name of subfolder to store output in.", default = "")
 parser.add_argument('--batch', dest = 'batch', action = 'store_true', help = "Batch mode. Skip questions and don't return to menu afterwards.")
 parser.set_defaults(batch = False)
 args = parser.parse_args()
 
 mode = args.mode
-subfolder = args.subfolder
+inputFile = args.inputFile
+outputSubfolder = args.outputSubfolder
 batch = args.batch
 
 if mode == 'archive':

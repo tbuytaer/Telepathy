@@ -51,6 +51,9 @@ for chat in chats:
     groups.append(chat)
 
 print('Welcome to the Telepathy archiving tool. This tool will archive Telegram chats based on a list.')
+if inputFile == "":
+    inputFile = "to_archive.csv"
+
 if batch:
     user_selection_log = "n"
     user_selection_media = "n"
@@ -61,7 +64,7 @@ else:
 print('Archiving chats...')
 
 async def main():
-    toArchiveDF = pd.read_csv('to_archive.csv', sep=';')
+    toArchiveDF = pd.read_csv('../input/' + inputFile, sep=';')
     channelList = toArchiveDF.To.unique()
     for channel in channelList:
         print("Working on ",channel," This may take a while...")
@@ -70,7 +73,7 @@ async def main():
             if(len(channelDF.index) == 1 ):
                 user_selection_media = channelDF['Media'].values[0]
             elif(len(channelDF.index) > 0 ):
-                print(f"WARNING: '{channel}' appears more than once in to_archive.csv! Using first value.")
+                print(f"WARNING: '{channel}' appears more than once in {inputfile}! Using first value.")
                 user_selection_media = channelDF['Media'].values[0]
             else:
                 print("No valid 'media' value for {channel}. Using default (no)")
@@ -139,10 +142,10 @@ async def main():
             for character in channel_clean:
                 if character.isalnum():
                     alphanumeric += character
-            if len(subfolder) != 0:
-                directory = './output/' + subfolder + '/' + alphanumeric
+            if len(outputSubfolder) != 0:
+                directory = '../output/' + outputSubfolder + '/' + alphanumeric
             else:
-                directory = './output/' + alphanumeric
+                directory = '../output/' + alphanumeric
 
             try:
                 os.makedirs(directory)

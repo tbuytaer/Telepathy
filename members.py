@@ -34,8 +34,8 @@ def getMembers(target_group):
     all_participants = client.get_participants(target_group)
 
     print('Creating file...')
-    if len(subfolder) != 0:
-        directory = './output/' + subfolder + '/' + 'memberlists/'
+    if len(outputSubfolder) != 0:
+        directory = './output/' + outputSubfolder + '/' + 'memberlists/'
     else:
         directory = './output/memberlists/'
     try:

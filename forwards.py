@@ -30,12 +30,18 @@ if not client.is_user_authorized():
 print('Welcome to channel forward scraper.\nThis tool will scrape a Telegram channel for all forwarded messages and their original sources.')
 
 
+if inputFile == "":
+    inputFile = "forwardchannels.csv"
+
 async def main(channelUsername):
     l = []
+    debugtemp = 1
     async for message in client.iter_messages(channelUsername):
-
         if message.forward is not None:
             try:
+                if debugtemp == 1:
+                    print(message.id)
+                    debugtemp = 0
                 id = message.forward.original_fwd.from_id
                 if id is not None:
                     ent = await client.get_entity(id)
@@ -55,7 +61,7 @@ async def main(channelUsername):
                         else:
                             pass
 
-                        l.append([channelUsername, ent.id, ent.title, ent.username, timestamp])
+                        l.append([message.id, channelUsername, ent.id, ent.title, ent.username, timestamp])
 
             except:
                 if user_selection_log == 'y':
@@ -70,16 +76,16 @@ async def main(channelUsername):
         if character.isalnum():
             alphanumeric += character
 
-    if len(subfolder) != 0:
-        directory = './output/' + subfolder + '/' + 'edgelists/'
+    if len(outputSubfolder) != 0:
+        directory = '../output/' + outputSubfolder + '/' + 'edgelists/'
     else:
-        directory = './output/edgelists/'
+        directory = '../output/edgelists/'
     try:
         os.makedirs(directory)
     except FileExistsError:
         pass
 
-    channelForwardDF = pd.DataFrame(l, columns = ['To', 'FromID', 'FromName', 'FromUsername', 'timestamp'])
+    channelForwardDF = pd.DataFrame(l, columns = ['messageID', 'To', 'FromID', 'FromName', 'FromUsername', 'timestamp'])
 
     file = directory + alphanumeric + '_edgelist.csv'
 
@@ -90,7 +96,7 @@ async def main(channelUsername):
 
 if batch:
     user_selection_log = "n"
-    toForwardDF = pd.read_csv('forwardchannels.csv')
+    toForwardDF = pd.read_csv('../input/' + inputFile)
     channelList = toForwardDF.Username.unique()
 
     for channelUsername in channelList:
@@ -128,7 +134,7 @@ if next1 == 'y':
         for character in name_clean:
             if character.isalnum():
                 alphanumeric += character
-        df = pd.read_csv('./output/' + subfolder + '/' + 'edgelists/'+ alphanumeric + '_edgelist.csv')
+        df = pd.read_csv('../output/' + outputSubfolder + '/' + 'edgelists/'+ alphanumeric + '_edgelist.csv')
         df = df.FromUsername.unique()
         l = []
         for i in df:
@@ -162,10 +168,10 @@ if next1 == 'y':
                                 if character.isalnum():
                                     alphanumeric += character
 
-                            if len(subfolder) != 0:
-                                directory = './output/' + subfolder + '/' + 'edgelists/'
+                            if len(outputSubfolder) != 0:
+                                directory = '../output/' + outputSubfolder + '/' + 'edgelists/'
                             else:
-                                directory = './output/edgelists/'
+                                directory = '../output/edgelists/'
                             try:
                                 os.makedirs(directory)
                             except FileExistsError:

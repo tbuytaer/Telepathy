@@ -64,9 +64,13 @@ dt_end = to_year + ',' + to_month + ',' + to_day
 d_end = datetime.datetime.strptime(dt_end, '%Y,%m,%d')
 
 print('Archiving chats...')
+if inputFile == "":
+    inputFile = "to_archive.csv"
+
+
 
 async def main():
-    df = pd.read_csv('to_archive.csv', sep=';')
+    toArchiveDF = pd.read_csv('../input/' + inputFile, sep=';')
     df = df.To.unique()
 
     for i in df:
@@ -82,10 +86,10 @@ async def main():
                         for character in i_clean:
                             if character.isalnum():
                                 alphanumeric += character
-                        if len(subfolder) != 0:
-                            directory = './output/' + subfolder + '/' + alphanumeric
+                        if len(outputSubfolder) != 0:
+                            directory = '../output/' + outputSubfolder + '/' + alphanumeric
                         else:
-                            directory = './output/' + alphanumeric
+                            directory = '../output/' + alphanumeric
                         try:
                             os.makedirs(directory)
                         except FileExistsError:
