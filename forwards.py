@@ -42,6 +42,7 @@ async def main(channelUsername):
                 if debugtemp == 1:
                     print(message.id)
                     debugtemp = 0
+                toChannelID = message.peer_id.channel_id
                 id = message.forward.original_fwd.from_id
                 if id is not None:
                     ent = await client.get_entity(id)
@@ -61,12 +62,13 @@ async def main(channelUsername):
                         else:
                             pass
 
-                        l.append([message.id, channelUsername, ent.id, ent.title, ent.username, timestamp])
+                        l.append([message.id, toChannelID, channelUsername, ent.id, ent.title, ent.username, timestamp])
 
-            except:
+            except Exception as e:
                 if user_selection_log == 'y':
                     print("An exception occurred: Could be private, now deleted, or a group.")
                 else:
+                    print(e)
                     pass
 
     name_clean = channelUsername
@@ -85,7 +87,7 @@ async def main(channelUsername):
     except FileExistsError:
         pass
 
-    channelForwardDF = pd.DataFrame(l, columns = ['messageID', 'To', 'FromID', 'FromName', 'FromUsername', 'timestamp'])
+    channelForwardDF = pd.DataFrame(l, columns = ['messageID', 'ToID', 'To', 'FromID', 'FromName', 'FromUsername', 'timestamp'])
 
     file = directory + alphanumeric + '_edgelist.csv'
 
