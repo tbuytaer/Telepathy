@@ -78,12 +78,11 @@ async def main():
             else:
                 print("No valid 'media' value for {channel}. Using default (no)")
                 user_selection_media = "n"
-            
-        if (not pd.isna(channelDF['Startdate'][0]) and len(channelDF['Startdate'].values[0]) == 10):
+        if (not pd.isna(channelDF['Startdate'].values[0]) and len(channelDF['Startdate'].values[0]) == 10):
             d_start = datetime.datetime.strptime(channelDF['Startdate'].values[0], '%Y-%m-%d')
         else:
             d_start = datetime.datetime.strptime('2000-01-01', '%Y-%m-%d')
-        if (not pd.isna(channelDF['Enddate'][0]) and len(channelDF['Enddate'].values[0]) == 10):
+        if (not pd.isna(channelDF['Enddate'].values[0]) and len(channelDF['Enddate'].values[0]) == 10):
             d_end = datetime.datetime.strptime(channelDF['Enddate'].values[0], '%Y-%m-%d')
         else:
             d_end = datetime.datetime.strptime('2037-01-01', '%Y-%m-%d')
@@ -143,9 +142,9 @@ async def main():
                 if character.isalnum():
                     alphanumeric += character
             if len(outputSubfolder) != 0:
-                directory = '../output/' + outputSubfolder + '/' + alphanumeric
+                directory = '../output/' + outputSubfolder + '/archive/' + alphanumeric
             else:
-                directory = '../output/' + alphanumeric
+                directory = '../output/archive/' + alphanumeric
 
             try:
                 os.makedirs(directory)
