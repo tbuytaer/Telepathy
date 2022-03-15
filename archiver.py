@@ -99,12 +99,29 @@ async def main():
                         day = str(format(message.date.day, '02d'))
                         hour = str(format(message.date.hour, '02d'))
                         minute = str(format(message.date.minute, '02d'))
-                        reply = message.reply_to_msg_id
-                        views = int(message.views)
-                        forward_ID = message.fwd_from.from_id
-                        forward_name = message.fwd_from.from_name
-                        forward_post_ID = int(message.fwd_from.channel_post)
-                        post_author = message.fwd_from.post_author
+                        if message.reply_to_msg_id is None:
+                            reply = ""
+                        else:
+                            reply = int(message.reply_to_msg_id)
+                        if message.text is None:
+                            message.text = ""
+                        if message.views is None:
+                            views = ""
+                        else:
+                            views = int(message.views)
+                        if message.fwd_from is None:
+                            forward_ID = ""
+                            forward_name = ""
+                            forward_post_ID = ""
+                            post_author = ""
+                        else:
+                            forward_ID = message.fwd_from.from_id
+                            forward_name = message.fwd_from.from_name
+                            if message.fwd_from.channel_post is None:
+                                forward_post_ID = ""
+                            else:
+                                forward_post_ID = int(message.fwd_from.channel_post)
+                            post_author = message.fwd_from.post_author
 
                         date = year + "-" + month + "-" + day
                         time = hour + ":" + minute
@@ -129,7 +146,8 @@ async def main():
                                 else:
                                     pass
 
-                    except:
+                    except Exception as e:
+                        print(e)
                         continue
                 else:
                     l.append(['None','None','None','None','None','None','None','None','None','None','None','None','None'])
