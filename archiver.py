@@ -89,6 +89,28 @@ async def main():
 
         l = []
         try:
+            channel_clean = channel
+            alphanumeric = ""
+
+            for character in channel_clean:
+                if character.isalnum():
+                    alphanumeric += character
+            if len(outputSubfolder) != 0:
+                directory = '../output/' + outputSubfolder + '/archive/' + alphanumeric
+            else:
+                directory = '../output/archive/' + alphanumeric
+
+            try:
+                os.makedirs(directory)
+            except FileExistsError:
+                pass
+            media_directory = directory + '/media'
+
+            try:
+                os.makedirs(media_directory)
+            except FileExistsError:
+                pass
+
             async for message in client.iter_messages(channel):
                 if message is not None:
                     try:
@@ -137,45 +159,27 @@ async def main():
                         timestamp = year + "-" + month + "-" + day + ", " + hour + ":" + minute
 
                         if d_start <= datestamp_clean and d_end >= datestamp_clean:
-                            l.append([channel,message.id,name,nameID,'"' + message.text + '"',timestamp,reply,views,forward_ID,forward_name,post_author,forward_post_ID])
+                            path = ""
                             if user_selection_media == 'y':
                                 if message.media:
-                                    path = await message.download_media(file=media_directory)
+                                    try:
+                                        path = await message.download_media(file=media_directory)
+                                    except Exception as e:
+                                        print(e)
                                     if user_selection_log == 'y':
                                         print('File saved to', path)
                                 else:
                                     pass
-
+                            l.append([channel,message.id,name,nameID,'"' + message.text + '"',timestamp,reply,views,forward_ID,forward_name,post_author,forward_post_ID,path])
                     except Exception as e:
                         print(e)
+                        print("Hier?")
                         continue
                 else:
-                    l.append(['None','None','None','None','None','None','None','None','None','None','None','None','None'])
+                    l.append(['None','None','None','None','None','None','None','None','None','None','None','None','None','None'])
                     continue
         
-            channel_clean = channel
-            alphanumeric = ""
-
-            for character in channel_clean:
-                if character.isalnum():
-                    alphanumeric += character
-            if len(outputSubfolder) != 0:
-                directory = '../output/' + outputSubfolder + '/archive/' + alphanumeric
-            else:
-                directory = '../output/archive/' + alphanumeric
-
-            try:
-                os.makedirs(directory)
-            except FileExistsError:
-                pass
-            media_directory = directory + '/media'
-
-            try:
-                os.makedirs(media_directory)
-            except FileExistsError:
-                pass
-
-            channelArchiveDF = pd.DataFrame(l, columns = ['Chat name','message ID','Name','ID','Message text','Timestamp','Reply to','Views','Forward Peer ID','Forwarded From','Post Author','Forward post ID'])
+            channelArchiveDF = pd.DataFrame(l, columns = ['Chat name','message ID','Name','ID','Message text','Timestamp','Reply to','Views','Forward Peer ID','Forwarded From','Post Author','Forward post ID', 'MediaPath'])
 
             file = directory + '/'+ alphanumeric + '_' + filetime_clean +'_archive.csv'
 
