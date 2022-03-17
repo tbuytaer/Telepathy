@@ -114,8 +114,12 @@ async def main():
             async for message in client.iter_messages(channel):
                 if message is not None:
                     try:
-                        name = get_display_name(message.sender)
-                        nameID = message.sender.id
+                        if message.sender is None:
+                            name = ""
+                            nameID = ""
+                        else:
+                            name = get_display_name(message.sender)
+                            nameID = message.sender.id
                         year = str(format(message.date.year, '02d'))
                         month = str(format(message.date.month, '02d'))
                         day = str(format(message.date.day, '02d'))
@@ -179,8 +183,6 @@ async def main():
                             l.append([channel,message.id,name,nameID,'"' + message.text + '"',timestamp,reply,views,forward_ID,forward_name,forward_username,post_author,forward_post_ID,path])
                     except Exception as e:
                         print(e)
-                        print("------------\n", message,"\n")
-                        print("Hier?")
                         continue
                 else:
                     l.append(['None','None','None','None','None','None','None','None','None','None','None', 'None', 'None','None','None'])
