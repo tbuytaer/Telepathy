@@ -35,9 +35,9 @@ def getMembers(target_group):
 
     print('Creating file...')
     if len(outputSubfolder) != 0:
-        directory = './output/' + outputSubfolder + '/' + 'memberlists/'
+        directory = '../output/' + outputSubfolder + '/' + 'memberlists/'
     else:
-        directory = './output/memberlists/'
+        directory = '../output/memberlists/'
     try:
         os.makedirs(directory)
     except FileExistsError:
