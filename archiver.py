@@ -115,7 +115,7 @@ async def main():
                 if message is not None:
                     try:
                         name = get_display_name(message.sender)
-                        nameID = message.from_id
+                        nameID = message.sender.id
                         year = str(format(message.date.year, '02d'))
                         month = str(format(message.date.month, '02d'))
                         day = str(format(message.date.day, '02d'))
@@ -131,14 +131,20 @@ async def main():
                             views = ""
                         else:
                             views = int(message.views)
-                        if message.fwd_from is None:
+                        if message.fwd_from is None or message.fwd_from.from_id is None:
                             forward_ID = ""
                             forward_name = ""
+                            forward_username = ""
                             forward_post_ID = ""
                             post_author = ""
                         else:
-                            forward_ID = message.fwd_from.from_id
-                            forward_name = message.fwd_from.from_name
+                            ent = await client.get_entity(message.fwd_from.from_id)
+                            forward_ID = ent.id
+                            if(hasattr(ent, 'title')):
+                                forward_name = ent.title
+                            else:
+                                forward_name = ""
+                            forward_username = ent.username
                             if message.fwd_from.channel_post is None:
                                 forward_post_ID = ""
                             else:
@@ -170,16 +176,17 @@ async def main():
                                         print('File saved to', path)
                                 else:
                                     pass
-                            l.append([channel,message.id,name,nameID,'"' + message.text + '"',timestamp,reply,views,forward_ID,forward_name,post_author,forward_post_ID,path])
+                            l.append([channel,message.id,name,nameID,'"' + message.text + '"',timestamp,reply,views,forward_ID,forward_name,forward_username,post_author,forward_post_ID,path])
                     except Exception as e:
                         print(e)
+                        print("------------\n", message,"\n")
                         print("Hier?")
                         continue
                 else:
-                    l.append(['None','None','None','None','None','None','None','None','None','None','None','None','None','None'])
+                    l.append(['None','None','None','None','None','None','None','None','None','None','None', 'None', 'None','None','None'])
                     continue
         
-            channelArchiveDF = pd.DataFrame(l, columns = ['Chat name','message ID','Name','ID','Message text','Timestamp','Reply to','Views','Forward Peer ID','Forwarded From','Post Author','Forward post ID', 'MediaPath'])
+            channelArchiveDF = pd.DataFrame(l, columns = ['Chat name','message ID','Name','ID','Message text','Timestamp','Reply to','Views','Forward Peer ID','Forwarded From','Forwarded From username', 'Post Author','Forward post ID', 'MediaPath'])
 
             file = directory + '/'+ alphanumeric + '_' + filetime_clean +'_archive.csv'
 
