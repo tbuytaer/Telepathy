@@ -180,7 +180,7 @@ async def main():
                                         print('File saved to', path)
                                 else:
                                     pass
-                            l.append([channel,message.id,name,nameID,'"' + message.text + '"',timestamp,reply,views,forward_ID,forward_name,forward_username,post_author,forward_post_ID,path])
+                            l.append([channel,message.id,name,nameID, message.text, timestamp,reply,views,forward_ID,forward_name,forward_username,post_author,forward_post_ID,path])
                     except Exception as e:
                         print(e)
                         continue
