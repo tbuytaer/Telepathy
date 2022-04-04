@@ -115,11 +115,13 @@ async def main():
                 if message is not None:
                     try:
                         if message.sender is None:
-                            name = ""
-                            nameID = ""
+                            authorName = ""
+                            authorID = ""
+                            authorUsername = ""
                         else:
-                            name = get_display_name(message.sender)
-                            nameID = message.sender.id
+                            authorName = get_display_name(message.sender)
+                            authorID = message.sender.id
+                            authorUsername = message.sender.username
                         year = str(format(message.date.year, '02d'))
                         month = str(format(message.date.month, '02d'))
                         day = str(format(message.date.day, '02d'))
@@ -140,7 +142,7 @@ async def main():
                             forward_name = ""
                             forward_username = ""
                             forward_post_ID = ""
-                            post_author = ""
+                            forward_author = ""
                         else:
                             ent = await client.get_entity(message.fwd_from.from_id)
                             forward_ID = ent.id
@@ -153,14 +155,14 @@ async def main():
                                 forward_post_ID = ""
                             else:
                                 forward_post_ID = int(message.fwd_from.channel_post)
-                            post_author = message.fwd_from.post_author
+                            forward_author = message.fwd_from.post_author
 
                         date = year + "-" + month + "-" + day
                         time = hour + ":" + minute
                         timestamp = date + ', ' + time
 
                         if user_selection_log == 'y':
-                            print(name,':','"' + message.text + '"',timestamp)
+                            print(authorName,':','"' + message.text + '"',timestamp)
                         else:
                             pass
                         
@@ -180,15 +182,15 @@ async def main():
                                         print('File saved to', path)
                                 else:
                                     pass
-                            l.append([channel,message.id,name,nameID, message.text, timestamp,reply,views,forward_ID,forward_name,forward_username,post_author,forward_post_ID,path])
+                            l.append([channel,message.id,authorName,authorID, authorUsername, message.text, timestamp,reply,views,forward_ID,forward_name,forward_username,forward_author,forward_post_ID,path])
                     except Exception as e:
                         print(e)
                         continue
                 else:
-                    l.append(['None','None','None','None','None','None','None','None','None','None','None', 'None', 'None','None','None'])
+                    l.append(['None','None','None','None','None','None','None','None','None','None','None','None', 'None', 'None','None','None'])
                     continue
         
-            channelArchiveDF = pd.DataFrame(l, columns = ['Chat name','message ID','Name','ID','Message text','Timestamp','Reply to','Views','Forward Peer ID','Forwarded From','Forwarded From username', 'Post Author','Forward post ID', 'MediaPath'])
+            channelArchiveDF = pd.DataFrame(l, columns = ['Chat name','message ID','Author Name','Author ID','Author Username','Message text','Timestamp','Reply to','Views','Forward Peer ID','Forwarded From','Forwarded From Username', 'Forwarded From Authorname','Forward post ID', 'MediaPath'])
 
             file = directory + '/'+ alphanumeric + '_' + filetime_clean +'_archive.csv'
 
