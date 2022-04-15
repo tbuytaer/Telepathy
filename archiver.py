@@ -111,7 +111,7 @@ async def main():
             except FileExistsError:
                 pass
 
-            async for message in client.iter_messages(channel):
+            async for message in client.iter_messages(channel, reverse = True, offset_date = d_start):
                 if message is not None:
                     try:
                         if message.sender is None:
